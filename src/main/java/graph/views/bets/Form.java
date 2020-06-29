@@ -1,36 +1,38 @@
+package graph.views.bets;
+
+import graph.AppController;
+import poo.Constants;
+import poo.League;
+import poo.Match;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
-public class MainWindow extends JFrame implements ActionListener{
-    private Container c;
-    private JLabel title;
-    private JLabel lbetter;
+public class Form extends JFrame implements ActionListener{
+    private JLabel title,lbetter ,tmatch, lregister;
     private JTextField fbetter;
-    private JLabel tmatch;
+    private JTextArea tregister;
+    private JButton submit,result;
     private JRadioButton[] win_matches;
     private JRadioButton[] draw_matches;
     private JRadioButton[] lose_matches;
-    private JButton submit;
-    private JButton rest;
-    private JButton result;
-    private String[] games =
-            {
-                    "Colo colo vs U.Catolica",
-                    "River vs U.Chile",
-                    "Boca vs Peñarol",
-                    "Fluminense vs Independiente"
-            };
+    private AppController app;
+    private League league_internacional;
+    private ArrayList<Match> matches ;
 
-    public MainWindow(){
+    public Form(AppController app, League league_nacional, League league_internacional){
+        this.app = app;
+        this.matches = new ArrayList<Match>();
+        this.matches.addAll(league_nacional.getMatchs());
+        this.matches.addAll(league_internacional.getMatchs());
+        this.removeAll();
+    }
+    public Container render( Container c){
         int location_y = 50;
         int space_y =50;
-
-        setSize(600,600);
-        setTitle("Bet366 - Online betting");
-
-        c = getContentPane();
-        c.setLayout(null);
 
         /* Titulo */
         title = new JLabel("Bet366 - Realizar apuesta");
@@ -69,22 +71,27 @@ public class MainWindow extends JFrame implements ActionListener{
         /* Matches */
         location_y = location_y + space_y;
 
+
         /* Games */
-        JLabel[] lmatches = new JLabel[games.length];
-        win_matches = new JRadioButton[games.length];
+        JLabel[] lmatches = new JLabel[this.matches.size()];
+        win_matches = new JRadioButton[this.matches.size()];
+        draw_matches = new JRadioButton[this.matches.size()];
+        lose_matches = new JRadioButton[this.matches.size()];
         ButtonGroup buttonGroup;
         buttonGroup = new ButtonGroup();
 
-        for(int i=0;i<games.length;i++){
+        for(int i=0;i<this.matches.size();i++){
             int location_x = 230;
             int space_x =90;
-            lmatches[i] = new JLabel(games[i]);
+            String labelMatch = this.matches.get(i).getDatetime()+" "+
+                                this.matches.get(i).getLocal().getName()+" vs "+
+                                this.matches.get(i).getVisitor().getName();
+            lmatches[i] = new JLabel(labelMatch);
             lmatches[i].setFont(new Font("Verdana", Font.PLAIN, 14));
-            lmatches[i].setSize(250, 20);
+            lmatches[i].setSize(450, 20);
             lmatches[i].setLocation(10, location_y);
             c.add(lmatches[i]);
 
-            win_matches = new JRadioButton[games.length];
             win_matches[i] = new JRadioButton("Gano");
             win_matches[i].setSize(75, 20);
             win_matches[i].setLocation(location_x, location_y);
@@ -92,7 +99,6 @@ public class MainWindow extends JFrame implements ActionListener{
             buttonGroup.add(win_matches[i]);
 
             location_x = location_x +space_x;
-            draw_matches = new JRadioButton[games.length];
             draw_matches[i] = new JRadioButton("Empate");
             draw_matches[i].setSize(75, 20);
             draw_matches[i].setLocation(location_x, location_y);
@@ -100,7 +106,6 @@ public class MainWindow extends JFrame implements ActionListener{
             buttonGroup.add(draw_matches[i]);
 
             location_x = location_x +space_x;
-            lose_matches = new JRadioButton[games.length];
             lose_matches[i] = new JRadioButton("Perder");
             lose_matches[i].setSize(75, 20);
             lose_matches[i].setLocation(location_x, location_y);
@@ -112,23 +117,45 @@ public class MainWindow extends JFrame implements ActionListener{
 
         location_y = location_y + space_y;
 
-        submit = new JButton("Guardar");
+        submit = new JButton("Guardar y crear nuevo");
         submit.setFont(new Font("Arial", Font.PLAIN, 15));
-        submit.setSize(100, 20);
-        submit.setLocation(10, location_y);
-//        submit.addActionListener(this);
+        submit.setSize(200, 20);
+        submit.setLocation(350, location_y);
+        submit.addActionListener(this);
         c.add(submit);
 
-        result = new JButton("Ver Resultados");
+        location_y = 30;
+
+        result = new JButton("Validar Resultados");
         result.setFont(new Font("Arial", Font.PLAIN, 15));
-        result.setSize(100, 20);
-        result.setLocation(450, location_y);
-//        submit.addActionListener(this);
+        result.setSize(140, 20);
+        result.setLocation(1000, location_y);
+        result.addActionListener(this);
         c.add(result);
+
+        /* Titulo */
+        lregister = new JLabel("Registros:");
+        lregister.setFont(new Font("Verdana", Font.PLAIN, 15));
+        lregister.setSize(100, 20);
+        lregister.setLocation(700, location_y);
+        c.add(lregister);
+        /* Titulo */
+
+        location_y = location_y + space_y;
+
+        tregister = new JTextArea();
+        tregister.setFont(new Font("Verdana", Font.PLAIN, 12));
+        tregister.setSize(400, 400);
+        tregister.setEditable(false);
+        tregister.setLocation(700, location_y);
+        tregister.setLineWrap(true);
+        c.add(tregister);
+
+        return c;
     }
-
-    public void actionPerformed(ActionEvent e){
-
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == submit){
+            app.route(Constants.BET_FORM);
+        }
     }
-
 }

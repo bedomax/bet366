@@ -1,13 +1,14 @@
+package poo;
+
 public class Person {
     private String name;
     private String nickname;
-    private Float wallet;
 
-    public Person(String name, String nickname, Float wallet) {
+    public Person(String name, String nickname) {
         this.name = name;
         this.nickname = nickname;
-        this.wallet = wallet;
     }
+
 
     public String getName() {
         return name;
@@ -17,7 +18,5 @@ public class Person {
         return nickname;
     }
 
-    public Float getWallet() {
-        return wallet;
-    }
+
 }

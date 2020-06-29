@@ -1,2 +1,4 @@
 rootProject.name = 'Bet366'
+include 'poo'
+include 'poo'
 

@@ -1,3 +1,5 @@
+package poo;
+
 public class Type {
     private String name;
 

@@ -1,3 +1,5 @@
+package poo;
+
 public class Bet {
     private String datetime;
     private Match match;

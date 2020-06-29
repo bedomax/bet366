@@ -1,18 +1,17 @@
-public class Award {
-    private Type type;
+package poo;
+
+import poo.Type;
+
+public class Award extends  Type{
     private float prize;
     private boolean draw;
     private boolean win;
 
-    public Award(Type type, float prize, boolean draw, boolean win) {
-        this.type = type;
+    public Award(String nameType, float prize, boolean draw, boolean win) {
+        super(nameType);
         this.prize = prize;
         this.draw = draw;
         this.win = win;
-    }
-
-    public Type getType() {
-        return type;
     }
 
     public float getPrize() {
