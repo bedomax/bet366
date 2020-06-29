@@ -1,24 +1,30 @@
 package poo;
 
-public class Bet {
+public class Bet{
+    private Bettor bettor;
     private String datetime;
     private Match match;
     private Integer localScore;
     private Integer visitorScore;
     private Award award;
-    private Boolean win;
+    private Boolean win, draw, lose;
 
-    public Bet(String datetime, Match match, Integer localScore, Integer visitorScore, Award award, Boolean win) {
+    public Bet(Bettor bettor, String datetime, Match match, Boolean win, Boolean draw, Boolean lose) {
+        this.bettor = bettor;
         this.datetime = datetime;
         this.match = match;
-        this.localScore = localScore;
-        this.visitorScore = visitorScore;
         this.award = award;
         this.win = win;
+        this.draw = draw;
+        this.lose = lose;
     }
 
     public String getDatetime() {
         return datetime;
+    }
+
+    public Bettor getBettor() {
+        return bettor;
     }
 
     public Match getMatch() {
@@ -39,5 +45,12 @@ public class Bet {
 
     public Boolean getWin() {
         return win;
+    }
+
+    public Boolean getDraw() {
+        return draw;
+    }
+    public Boolean getLose() {
+        return lose;
     }
 }

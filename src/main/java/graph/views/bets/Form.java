@@ -1,19 +1,18 @@
 package graph.views.bets;
 
 import graph.AppController;
-import poo.Constants;
-import poo.League;
-import poo.Match;
+import poo.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Form extends JFrame implements ActionListener{
-    private JLabel title,lbetter ,tmatch, lregister;
-    private JTextField fbetter;
+    private JLabel title,lbettor, lnickname ,tmatch, lregister;
+    private JTextField fbettor, fnickname;
     private JTextArea tregister;
     private JButton submit,result;
     private JRadioButton[] win_matches;
@@ -22,13 +21,18 @@ public class Form extends JFrame implements ActionListener{
     private AppController app;
     private League league_internacional;
     private ArrayList<Match> matches ;
-
+    private ArrayList<Bet> bets;
+    private ButtonGroup buttonGroup[];
     public Form(AppController app, League league_nacional, League league_internacional){
         this.app = app;
         this.matches = new ArrayList<Match>();
         this.matches.addAll(league_nacional.getMatchs());
         this.matches.addAll(league_internacional.getMatchs());
-        this.removeAll();
+        this.bets = new ArrayList<Bet>();
+        win_matches = new JRadioButton[this.matches.size()];
+        draw_matches = new JRadioButton[this.matches.size()];
+        lose_matches = new JRadioButton[this.matches.size()];
+        buttonGroup = new ButtonGroup[this.matches.size()];
     }
     public Container render( Container c){
         int location_y = 50;
@@ -45,19 +49,37 @@ public class Form extends JFrame implements ActionListener{
         location_y = location_y + space_y;
 
         /* Titulo */
-        lbetter = new JLabel("Nombre:");
-        lbetter.setFont(new Font("Verdana", Font.PLAIN, 15));
-        lbetter.setSize(100, 20);
-        lbetter.setLocation(10, location_y);
-        c.add(lbetter);
+        lbettor = new JLabel("Nombre:");
+        lbettor.setFont(new Font("Verdana", Font.PLAIN, 15));
+        lbettor.setSize(100, 20);
+        lbettor.setLocation(10, location_y);
+        c.add(lbettor);
+        /* Titulo */
+
+
+
+        /* Textfield */
+        fbettor = new JTextField();
+        fbettor.setFont(new Font("Verdana", Font.PLAIN, 15));
+        fbettor.setSize(190, 20);
+        fbettor.setLocation(100, location_y);
+        c.add(fbettor);
+        /* Textfield */
+
+        /* Titulo */
+        lbettor = new JLabel("Nickname:");
+        lbettor.setFont(new Font("Verdana", Font.PLAIN, 15));
+        lbettor.setSize(100, 20);
+        lbettor.setLocation(300, location_y);
+        c.add(lbettor);
         /* Titulo */
 
         /* Textfield */
-        fbetter = new JTextField();
-        fbetter.setFont(new Font("Verdana", Font.PLAIN, 15));
-        fbetter.setSize(190, 20);
-        fbetter.setLocation(100, location_y);
-        c.add(fbetter);
+        fnickname = new JTextField();
+        fnickname.setFont(new Font("Verdana", Font.PLAIN, 15));
+        fnickname.setSize(190, 20);
+        fnickname.setLocation(400, location_y);
+        c.add(fnickname);
         /* Textfield */
 
         location_y = location_y + space_y;
@@ -74,15 +96,10 @@ public class Form extends JFrame implements ActionListener{
 
         /* Games */
         JLabel[] lmatches = new JLabel[this.matches.size()];
-        win_matches = new JRadioButton[this.matches.size()];
-        draw_matches = new JRadioButton[this.matches.size()];
-        lose_matches = new JRadioButton[this.matches.size()];
-        ButtonGroup buttonGroup;
-        buttonGroup = new ButtonGroup();
-
         for(int i=0;i<this.matches.size();i++){
-            int location_x = 230;
+            int location_x = 330;
             int space_x =90;
+            buttonGroup[i] = new ButtonGroup();
             String labelMatch = this.matches.get(i).getDatetime()+" "+
                                 this.matches.get(i).getLocal().getName()+" vs "+
                                 this.matches.get(i).getVisitor().getName();
@@ -92,25 +109,25 @@ public class Form extends JFrame implements ActionListener{
             lmatches[i].setLocation(10, location_y);
             c.add(lmatches[i]);
 
-            win_matches[i] = new JRadioButton("Gano");
-            win_matches[i].setSize(75, 20);
+            win_matches[i] = new JRadioButton("Gana");
+            win_matches[i].setSize(90, 20);
             win_matches[i].setLocation(location_x, location_y);
             c.add(win_matches[i]);
-            buttonGroup.add(win_matches[i]);
+            buttonGroup[i].add(win_matches[i]);
 
             location_x = location_x +space_x;
-            draw_matches[i] = new JRadioButton("Empate");
-            draw_matches[i].setSize(75, 20);
+            draw_matches[i] = new JRadioButton("Empata");
+            draw_matches[i].setSize(90, 20);
             draw_matches[i].setLocation(location_x, location_y);
             c.add(draw_matches[i]);
-            buttonGroup.add(draw_matches[i]);
+            buttonGroup[i].add(draw_matches[i]);
 
             location_x = location_x +space_x;
-            lose_matches[i] = new JRadioButton("Perder");
-            lose_matches[i].setSize(75, 20);
+            lose_matches[i] = new JRadioButton("Pierde");
+            lose_matches[i].setSize(90, 20);
             lose_matches[i].setLocation(location_x, location_y);
             c.add(lose_matches[i]);
-            buttonGroup.add(lose_matches[i]);
+            buttonGroup[i].add(lose_matches[i]);
             location_y = location_y + space_y;
         }
         /* Games */
@@ -155,7 +172,56 @@ public class Form extends JFrame implements ActionListener{
     }
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == submit){
-            app.route(Constants.BET_FORM);
+            Bettor bettor = new Bettor(fbettor.getText(), fnickname.getText());
+            for(int i=0;i<this.matches.size();i++){
+                boolean win = false, draw = false, lose = false;
+                if(this.win_matches[i].isSelected()){
+                    win = true;
+                }
+                if(this.draw_matches[i].isSelected()){
+                    draw = true;
+                }
+                if(this.lose_matches[i].isSelected()){
+                    lose = true;
+                }
+                this.bets.add(new Bet(bettor,
+                        this.matches.get(i).getDatetime(),
+                        this.matches.get(i),
+                        win,
+                        draw,
+                        lose));
+            }
+            tregister.setText("Guardo informacion");
+            this.printInfo();
+            this.reset();
+        }
+    }
+    public void printInfo(){
+        String texto;
+        Iterator<Bet> itr_bets = this.bets.iterator();
+        texto = "";
+        while(itr_bets.hasNext()){
+            Bet bet = itr_bets.next();
+            String betText = "";
+            if(bet.getWin()) betText = "GANA";
+            if(bet.getDraw()) betText = "EMPATA";
+            if(bet.getLose()) betText = "PIERDE";
+
+            texto += "Apuesta:"+
+                    bet.getBettor().getNickname() + "\n"+
+                    "Partido:" + bet.getMatch().getLocal().getName() +
+                    " vs "+bet.getMatch().getVisitor().getName()+ "\n"+
+                    betText+":"+bet.getMatch().getLocal().getName();
+            texto += "\n\n";
+            tregister.setText(texto);
+        }
+    }
+    public void reset(){
+        String def = "";
+        fbettor.setText(def);
+        fnickname.setText(def);
+        for(int i=0;i<this.matches.size();i++){
+            buttonGroup[i].clearSelection();
         }
     }
 }
